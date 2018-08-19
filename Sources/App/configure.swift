@@ -1,6 +1,7 @@
 import FluentSQLite
 import Vapor
 import Leaf
+import FluentSQLite
 
 /// Called before your application initializes.
 public func configure(
@@ -21,7 +22,11 @@ public func configure(
     let leafProvider = LeafProvider()
     try services.register(leafProvider)
     config.prefer(LeafRenderer.self, for: ViewRenderer.self)
-
+    
+    ///configure fluent SQLite
+    
+    try services.register(FluentSQLiteProvider())
+    
     /// Register middleware
     var middlewares = MiddlewareConfig() // Create _empty_ middleware config
     /// middlewares.use(FileMiddleware.self) // Serves files from `Public/` directory
@@ -38,6 +43,7 @@ public func configure(
 
     /// Configure migrations
     var migrations = MigrationConfig()
+    migrations.add(model: User.self, database: .sqlite)
     migrations.add(model: Todo.self, database: .sqlite)
     services.register(migrations)
 
